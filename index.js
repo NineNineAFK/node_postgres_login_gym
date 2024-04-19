@@ -4,10 +4,31 @@ const { pool } = require("./dBconfig");
 const { name } = require("ejs");
 const { url } = require("inspector");
 
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
+const session = require("express-session")
+const flash = require("express-flash");
+const passport = require("passport");
+const initializePassport= require("./passportConfig");
+initializePassport(passport);
+
 const app =  express();
 
+
+
 app.use(express.urlencoded({extended:false}))
+
+app.use(session({
+    secret:"secret",
+    resave:false,
+    saveUninitialized: false,
+}))
+// Funtion inside passport which initializes passport
+app.use(passport.initialize());
+// Store our variables to be persisted across the whole session. Works with app.use(Session) above
+app.use(passport.session());
+app.use(flash());
+
+
 const PORT = process.env.PORT ||3000
 
 app.set("view engine", "ejs");
@@ -66,6 +87,22 @@ else{
                 errors.push({message:"email already registered"})
                 res.render("register", {errors})
             }
+            else{
+                pool.query(
+                    `INSERT INTO users (name, email, password)
+                    VALUES ($1, $2, $3)
+                    RETURNING id, password`,[name, email, hashedPassword],(err, result)=>{
+
+                        if(err){
+                            throw err;
+                        }
+                        console.log(result.rows);
+                        req.flash("success_msg", "You are now registered. Please log in");
+                        res.redirect("/users/login",)
+                    }
+                    
+                )
+            }
 
         }
     )
@@ -84,9 +121,19 @@ app.get("/users/dashboard", (req, res)=>[
     res.render("dashboard")
 ])
 
-app.get("/users/logout", (req, res)=>{
-
-    res.render("home")
+app.get("/users/logout", (req,res) => {
+    req.logOut(function(err) {
+        if (err) { return next(err); }
+        req.flash("success_msg", "You have successfully logged out.");
+        res.redirect("/users/login");
+    });
 })
+
+
+app.post("/users/login", passport.authenticate('local',{
+    successRedirect: "/users/dashboard",
+    failureRedirect: "/users/login",
+    failureFlash: true, 
+}))
 
 app.listen(PORT)
