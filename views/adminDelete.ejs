@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admins List</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admins List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Shift</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% admins.forEach(admin => { %>
+                <tr>
+                    <td><%= admin.name %></td>
+                    <td><%= admin.age %></td>
+                    <td><%= admin.email %></td>
+                    <td><%= admin.shift %></td>
+                    <td>
+                        <form method="POST" action="/superuser/adminDelete/<%= admin.id %>">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>
