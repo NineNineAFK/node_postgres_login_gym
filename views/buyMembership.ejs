@@ -1,0 +1,52 @@
+<!-- membershipForm.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Membership</title>
+</head>
+<body>
+    <h1>Buy Membership</h1>
+    <form action="/users/dashboard/buyMembership" method="POST">
+        
+
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" required onchange="calculatePrice()"><br><br>
+
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" required onchange="calculatePrice()"><br><br>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required readonly><br><br>
+
+        <label>Payment Method:</label><br>
+        <input type="radio" id="creditCard" name="paymentMethod" value="Credit Card" required>
+        <label for="creditCard">Credit Card</label><br>
+        
+        <input type="radio" id="paypal" name="paymentMethod" value="PayPal" required>
+        <label for="paypal">PayPal</label><br><br>
+
+        <button type="submit">Purchase Membership</button>
+    </form>
+
+    <script>
+        function calculatePrice() {
+            // Get the start and end date values
+            const startDate = new Date(document.getElementById("startDate").value);
+            const endDate = new Date(document.getElementById("endDate").value);
+
+            // Calculate the number of milliseconds between start and end dates
+            const millisecondsPerWeek = 1000 * 60 * 60 * 24 * 7;
+            const numberOfWeeks = Math.ceil((endDate - startDate) / millisecondsPerWeek);
+
+            // Calculate the price (400 Rs per week)
+            const price = numberOfWeeks * 400;
+
+            // Update the price input field with the calculated price
+            document.getElementById("price").value = price;
+        }
+    </script>
+</body>
+</html>
