@@ -144,7 +144,13 @@ app.post("/users/login", passport.authenticate('local',{
 
 app.get("/users/dashboard/buyMembership", (req, res)=>{
     res.render("buyMembership")})
-app.post("/users/dashboard/buyMembership", async (req, res) => {
+
+
+
+
+
+
+    app.post("/users/dashboard/buyMembership", async (req, res) => {
         try {
             // Assuming you have authenticated users and can access the user's email from req.user.email
             const userEmail = req.user.email;
@@ -159,7 +165,19 @@ app.post("/users/dashboard/buyMembership", async (req, res) => {
             }
     
             const userId = userResult.rows[0].id;
-            const paymentMethod =req.body.paymentMethod
+    
+            // Check if the user already has a membership
+            const membershipQuery = 'SELECT * FROM membership WHERE user_id = $1';
+            const membershipResult = await pool.query(membershipQuery, [userId]);
+    
+            if (membershipResult.rows.length > 0) {
+                // User already has a membership, show details
+                const membershipDetails = membershipResult.rows[0];
+                return res.render("membershipDetails", { membershipDetails });
+            }
+    
+            // User doesn't have a membership, proceed with purchasing a new one
+            const paymentMethod = req.body.paymentMethod;
     
             // Extract start and end dates from the request body
             const { startDate, endDate } = req.body;
@@ -189,6 +207,9 @@ app.post("/users/dashboard/buyMembership", async (req, res) => {
             res.status(500).send("Error purchasing membership");
         }
     });
+    
+
+
 
     app.get("/users/dashboard/buyMembership/confirmation", (req, res)=>{
         res.render("confirmation")
@@ -203,7 +224,109 @@ app.get("/users/admin/login", (req, res)=>{
     res.render("adminLogin")
 })
 
+app.post("/users/admin/login", async(req, res) => {
+    const { email, password } = req.body;
 
+    // Check if email and password are provided
+    if (!email || !password) {
+        return res.status(400).send("Email and password are required");
+    }
+
+    // Query the database to find the admin with the provided email
+    pool.query('SELECT * FROM admins WHERE email = $1', [email], (err, result) => {
+        if (err) {
+            console.error('Error retrieving admin:', err);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        // If no admin found with the provided email
+        if (result.rows.length === 0) {
+            return res.status(401).send('Invalid email or password');
+        }
+
+        const admin = result.rows[0];
+
+        // Compare the provided password with the hashed password stored in the database
+        bcrypt.compare(password, admin.password, (bcryptErr, bcryptResult) => {
+            if (bcryptErr) {
+                console.error('Error comparing passwords:', bcryptErr);
+                return res.status(500).send('Internal Server Error');
+            }
+
+            if (!bcryptResult) {
+                // Passwords don't match
+                return res.status(401).send('Invalid email or password');
+            }
+           // const query = 'SELECT * FROM users';
+            //const { rows: users } = await pool.query(query);
+            // Passwords match, redirect to admin home
+            res.redirect("/users/admin/adminHome")
+            //res.render("adminHome",);
+        });
+    });
+});
+
+
+app.get("/users/admin/adminHome", async (req, res) => {
+    try {
+        // Query to fetch all users from the database
+        const query = 'SELECT * FROM users';
+        const { rows: users } = await pool.query(query);
+
+        // Render the admin home page with the fetched user data
+        res.render("adminHome", { users });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).send('Error fetching users');
+    }
+});
+
+// Express route to handle user deletion
+// Express route to handle user deletion
+app.post("/users/admin/userDelete/:id", async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        // Delete associated records from the membership table
+        await pool.query('DELETE FROM membership WHERE user_id = $1', [userId]);
+
+        // Now, delete the user from the users table
+        await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+
+        res.status(200).send('User deleted successfully.');
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).send('Error deleting user');
+    }
+});
+
+
+
+// Express route to render admin home page with user data
+app.get("/users/admin/adminHome", async (req, res) => {
+    try {
+        // Query to fetch all users from the database
+        const query = 'SELECT * FROM users';
+        const { rows: users } = await pool.query(query);
+
+        // Render the admin home page with the fetched user data
+        res.render("adminHome", { users });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).send('Error fetching users');
+    }
+});
+app.post("/users/admin/logout", (req, res) => {
+    req.logOut(function(err) {
+        if (err) {
+            console.error("Error logging out:", err);
+            res.status(500).send("Error logging out");
+            return;
+        }
+        req.flash("success_msg", "You have successfully logged out.");
+        res.redirect("/users/admin/login");
+    });
+});
 
 
 
@@ -211,10 +334,40 @@ app.get("/users/admin/superuser", (req, res)=>{
     res.render("superuser")
 })
 
-app.post("/users/admin/superuser", passport.authenticate('local',{
-    successRedirect: "/superuser/home",
-    failureRedirect: "/users/admin/superuser",
-    failureFlash: true,}))
+// Modify the route to handle user authentication
+app.post("/users/admin/superuser", async (req, res) => {
+    const { email, password } = req.body;
+
+    // Query the database to find the user with the provided email
+    try {
+        const query = 'SELECT * FROM superuser WHERE email = $1';
+        const { rows } = await pool.query(query, [email]);
+
+        // If no user found with the provided email
+        if (rows.length === 0) {
+            req.flash("error", "Invalid email or password");
+            res.redirect("/users/admin/superuser");
+            return;
+        }
+
+        const user = rows[0];
+
+        // Compare the provided password with the password stored in the database
+        if (password !== user.password) {
+            req.flash("error", "Invalid email or password");
+            res.redirect("/users/admin/superuser");
+            return;
+        }
+
+        // Authentication successful, redirect to the user's home page
+        res.redirect("/superuser/home");
+    } catch (error) {
+        console.error('Error authenticating user:', error);
+        req.flash("error", "Internal Server Error");
+        res.redirect("/users/admin/superuser");
+    }
+});
+
 
 
 
@@ -223,7 +376,17 @@ app.get("/superuser/home", (req, res)=>{
     res.render("homeSuper")
 })
 
-
+app.post("/superuser/home/logout", (req, res)=>{
+    req.logOut(function(err) {
+        if (err) {
+            console.error("Error logging out:", err);
+            res.status(500).send("Error logging out");
+            return;
+        }
+        req.flash("success_msg", "You have successfully logged out.");
+        res.redirect("/users/admin/superuser");
+    });
+})
 
 
 app.get("/superuser/adminRegister", (req, res)=>{
