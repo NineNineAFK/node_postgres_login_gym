@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" integrity="sha512-EZLkOqwILORob+p0BXZc+Vm3RgJBOe1Iq/0fiI7r/wJgzOFZMlsqTa29UEl6v6U6gsV4uIpsNZoV32YZqrCRCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <title>Document</title>
+
+         
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+   <script src="https://cdn.tailwindcss.com"></script>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" integrity="sha512-EZLkOqwILORob+p0BXZc+Vm3RgJBOe1Iq/0fiI7r/wJgzOFZMlsqTa29UEl6v6U6gsV4uIpsNZoV32YZqrCRCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+   <title>SuperUser Login</title>
+
 </head>
-<body>
+
+
+<!-- <body>
     <h1>login</h1>
     <ul>
 
@@ -23,7 +33,7 @@
         <% } %>
     </ul>
    
-    <form action="/users/admin/superuser" method="POST">  
+    <form action="/users/login" method="POST">  
 
         <div>
             <input type="text" name="name" id="name" placeholder="enter your name" required>
@@ -39,8 +49,68 @@
 
         <input type="submit" name="login" value="Login" id="">
 
+        <a href="/users/register"> New user? register here</a>
+    </form>
+</body> -->
+
+<body class="bg-black">
+
+    <ul class="text-white text-3xl text-bold" >
+
+        <% if (messages.success_msg) { %>
+         <li>   <%= messages.success_msg %>
+            <% } %>
+        </li>
+
+    </ul>
+
+    <ul>
+        <% if (messages.error) { %>
+         <li><%= messages.error %> </li>
+        <% } %>
+    </ul>
+
+
+    <form action="/users/admin/superuser"  method="POST" class="flex flex-col align-items-center justify-center h-screen">
+
+
+
+        <div class="justify-start pb-5 flex flex-row">
+            <!-- <a href="/">
+                <span class="material-symbols-outlined text-white text-7xl ">
+                    exercise
+                    </span>
+
+                  
+    
+            </a> -->
+
+            
+        <h1 class="text-6xl font-bold pl-3 text-white pr-5 w-96 text-center leading-snug">SuperUser Login</h1>
+
+        </div>
+     
+
+        <div>
+            <input type="text" placeholder="Full Name" id="name"  class="w-96" required>
+        </div>
         
+        <div class="p-3">
+            <input type="text" placeholder="Email" id="email"  class="w-96" required>
+        </div>
+
+        <div class="p-0">
+            <input type="password" placeholder="Password" id="password"   class="w-96" required>
+        </div>
+
+        <div class="p-5">
+            <input type="submit" name="login" value="Login" class="w-96 text-white" id="">
+        </div>
+
     </form>
 
 </body>
+
+
+
 </html>

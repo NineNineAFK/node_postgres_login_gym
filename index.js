@@ -1,5 +1,7 @@
 const express = require("express");
 
+
+
 const { pool } = require("./dBconfig");
 const { name } = require("ejs");
 const { url } = require("inspector");
@@ -22,6 +24,12 @@ const app =  express();
 
 app.use(express.urlencoded({extended:false}))
 
+
+// in order for rendering public as a static folder while backend is being hosted. All 
+// files in this folder will be rendered statically.
+app.use(express.static("public")); 
+
+
 app.use(session({
     secret:"secret",
     resave:false,
@@ -34,7 +42,7 @@ app.use(passport.session());
 app.use(flash());
 
 
-const PORT = process.env.PORT ||3000
+const PORT = process.env.PORT ||3001
 
 app.set("view engine", "ejs");
 app.get("/", (req, res)=>{
@@ -102,6 +110,7 @@ else{
                             throw err;
                         }
                         console.log(result.rows);
+                     
                         req.flash("success_msg", "You are now registered. Please log in");
                         res.redirect("/users/login",)
                     }
@@ -126,9 +135,14 @@ app.get("/users/dashboard", (req, res)=>[
     res.render("dashboard")
 ])
 
+app.get("/users/dashboard1", (req, res)=>[
+    res.render("dashboard1")
+])
+
 app.get("/users/logout", (req,res) => {
     req.logOut(function(err) {
         if (err) { return next(err); }
+      
         req.flash("success_msg", "You have successfully logged out.");
         res.redirect("/users/login");
     });
@@ -170,7 +184,8 @@ app.get("/users/dashboard/buyMembership", (req, res)=>{
             const membershipQuery = 'SELECT * FROM membership WHERE user_id = $1';
             const membershipResult = await pool.query(membershipQuery, [userId]);
     
-            if (membershipResult.rows.length > 0) {
+            if (membershipResult.rows.length > 0) 
+            {
                 // User already has a membership, show details
                 const membershipDetails = membershipResult.rows[0];
                 return res.render("membershipDetails", { membershipDetails });

@@ -1,32 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" integrity="sha512-EZLkOqwILORob+p0BXZc+Vm3RgJBOe1Iq/0fiI7r/wJgzOFZMlsqTa29UEl6v6U6gsV4uIpsNZoV32YZqrCRCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Edit Admins</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Edit Admins</h1>
 
-    <ul><% if (typeof errors !='undefined') { %>
+<body class="bg-black text-white pt-4 pl-4 ">
+    <h1 class="text-4xl font-bold mb-4">Edit Admins</h1>
+
+    <ul>
+        <% if (typeof errors !='undefined') { %>
         <% errors.forEach(error => { %>
-            <li><%= error.message %></li>
+        <li><%= error.message %></li>
         <% }) %>
-       
-    <% } %></ul>    
 
-  
+        <% } %>
+    </ul>
+
+    <!-- Logout button -->
+    <form action="/superuser/home/logout" method="POST" class="mt-4">
+        <button type="submit" class="bg-white text-black px-4 py-2 rounded-md shadow-sm hover:bg-gray-200">Logout</button>
     </form>
 
-    
-      <!-- Logout button -->
-      <form action="/superuser/home/logout" method="POST">
-        <button type="submit">Logout</button>
-    </form>
-
-    <li><a href="/superuser/adminRegister">Add new admin</a></li>
-    <li><a href="/superuser/adminDelete">Remove an admin</a></li>
-
+    <ul class="mt-4">
+        <li><a href="/superuser/adminRegister" class="text-white">Add new admin</a></li>
+        <li><a href="/superuser/adminDelete" class="text-white">Remove an admin</a></li>
+    </ul>
 </body>
+
 </html>

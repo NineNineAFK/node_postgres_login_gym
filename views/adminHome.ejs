@@ -5,10 +5,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <title>Admin Home</title>
 </head>
-<body>
-    <h1>Welcome to Admin Home</h1>
+<body class="bg-black" >
+
+    <div class="text-white" >
+         <h1>Welcome to Admin Home</h1>
     <ul>
         <% users.forEach(user => { %>
             <li>
@@ -24,5 +28,7 @@
     <form action="/users/admin/logout" method="POST">
         <button type="submit">Logout</button>
     </form>
+    </div>
+   
 </body>
 </html>

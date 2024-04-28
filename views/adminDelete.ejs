@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <title>Admins List</title>
     <style>
         table {
@@ -19,8 +21,9 @@
         }
     </style>
 </head>
-<body>
-    <h1>Admins List</h1>
+<body class="bg-black" >
+    <div class="text-white" >
+            <h1>Admins List</h1>
     <table>
         <thead>
             <tr>
@@ -47,5 +50,7 @@
             <% }); %>
         </tbody>
     </table>
+    </div>
+
 </body>
 </html>

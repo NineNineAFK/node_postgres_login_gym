@@ -1,34 +1,48 @@
-<!-- membershipForm.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buy Membership</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Buy Membership</h1>
+
+<body class="bg-black text-white">
+    <h1 class="text-4xl font-bold">Buy Membership</h1>
     <form action="/users/dashboard/buyMembership" method="POST">
-        
 
-        <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate" name="startDate" required onchange="calculatePrice()"><br><br>
+        <div class="my-4">
+            <div class="flex flex-col mb-4">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required onchange="calculatePrice()"
+                    class="bg-white text-black px-2 py-1 h-8 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"><br><br>
+            </div>
 
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate" name="endDate" required onchange="calculatePrice()"><br><br>
+            <div class="flex flex-col mb-4">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" required onchange="calculatePrice()"
+                    class="bg-white text-black px-2 py-1 h-8 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"><br><br>
+            </div>
 
-        <label for="price">Price:</label>
-        <input type="number" id="price" name="price" required readonly><br><br>
+            <div class="flex flex-col mb-4">
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" required readonly
+                    class="bg-white text-black px-2 py-1 h-8 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"><br><br>
+            </div>
+        </div>
 
-        <label>Payment Method:</label><br>
-        <input type="radio" id="creditCard" name="paymentMethod" value="Credit Card" required>
-        <label for="creditCard">Credit Card</label><br>
-        
-        <input type="radio" id="paypal" name="paymentMethod" value="PayPal" required>
-        <label for="paypal">PayPal</label><br><br>
+        <div class="mb-4">
+            <label class="block mb-2">Payment Method:</label>
+            <input type="radio" id="creditCard" name="paymentMethod" value="Credit Card" required
+                class="mr-2"><label for="creditCard">Credit Card</label><br>
 
-        <button type="submit">Purchase Membership</button>
+            <input type="radio" id="paypal" name="paymentMethod" value="PayPal" required class="mr-2"><label
+                for="paypal">PayPal</label><br><br>
+        </div>
+
+        <button type="submit" class="bg-white text-black px-4 py-2 rounded-md shadow-sm hover:bg-gray-200">Purchase
+            Membership</button>
     </form>
 
     <script>
@@ -49,4 +63,5 @@
         }
     </script>
 </body>
+
 </html>
